@@ -11,11 +11,11 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    data = ModalRoute.of(context)!.settings.arguments as Map;
-    print(data);
+    data = data.isNotEmpty ? data : ModalRoute.of(context)!.settings.arguments as Map;
 
     String bgImage = data["isDayTime"] ? "day.jpg" : "night.jpg";
-    Color? bgColor = data["isDayTime"] ? Colors.blue[200] : Colors.indigo[700];
+    Color? bgColor = data["isDayTime"] ? Colors.blue[200] : Colors.blue[900];
+
     return Scaffold(
       backgroundColor: bgColor,
       body: SafeArea(
@@ -32,11 +32,19 @@ class _HomeState extends State<Home> {
             children: <Widget>[
               // ignore: deprecated_member_use
               FlatButton.icon(
-                onPressed: () {
-                  Navigator.pushNamed(context, "/location");
+                onPressed: () async{
+                  dynamic result = await Navigator.pushNamed(context, "/location");
+                  setState(() {
+                    data={
+                      "location": result["location"],
+                      "flag": result["flag"],
+                      "time": result["time"],
+                      "isDayTime": result["isDayTime"]
+                    };
+                  });
                 },
-                icon: Icon(Icons.edit_location),
-                label: Text("Edit Location"),
+                icon: Icon(Icons.edit_location,color: Colors.grey[300],),
+                label: Text("Edit Location",style: TextStyle(color: Colors.grey[300]),),
               ),
               SizedBox(height: 20.0),
               Row(
@@ -44,7 +52,7 @@ class _HomeState extends State<Home> {
                 children: <Widget>[
                   Text(
                     data["location"],
-                    style: TextStyle(fontSize: 28, letterSpacing: 2),
+                    style: TextStyle(fontSize: 28, letterSpacing: 2,color: Colors.grey[100]),
                   )
                 ],
               ),
@@ -55,6 +63,7 @@ class _HomeState extends State<Home> {
                 data["time"],
                 style: TextStyle(
                   fontSize: 66,
+                    color: Colors.grey[300]
                 ),
               )
             ],
